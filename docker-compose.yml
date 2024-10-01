@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  zookeeper:
+    image: zookeeper:3.7
+    container_name: zookeeper
+    ports:
+      - "2181:2181"  # Zookeeper client port
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=zookeeper:2888:3888;2181
+
+  api-gateway-lru-cache:
+    image: mkkr1998/apigateway:latest
+    container_name: api-gateway-lru-cache
+    ports:
+      - "8080:8080"
+    depends_on:
+      - zookeeper
+
+  lru-cache-service:
+    image: mkkr1998/lrucacheservice:latest
+    scale: 3
+    depends_on:
+      - zookeeper
