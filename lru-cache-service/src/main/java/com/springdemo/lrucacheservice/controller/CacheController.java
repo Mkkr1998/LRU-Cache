@@ -1,8 +1,6 @@
 package com.springdemo.lrucacheservice.controller;
 
-import com.springdemo.lrucacheservice.repository.LRUCache;
 import com.springdemo.lrucacheservice.service.LRUCacheService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 

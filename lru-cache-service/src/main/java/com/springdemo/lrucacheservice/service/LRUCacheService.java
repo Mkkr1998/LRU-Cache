@@ -2,24 +2,34 @@ package com.springdemo.lrucacheservice.service;
 
 import com.springdemo.lrucacheservice.repository.LRUCache;
 import com.springdemo.lrucacheservice.synchronizer.ZookeeperSynchronizer;
-import org.apache.curator.framework.CuratorFramework;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class LRUCacheService {
 
     private final LRUCache cache;
     private final ZookeeperSynchronizer zookeeperSynchronizer;
+    private final String instanceId;
 
     @Autowired
     public LRUCacheService(ZookeeperSynchronizer zookeeperSynchronizer) {
-        this.cache = new LRUCache(10); // Cache capacity
+        this.cache = new LRUCache(100); // Cache capacity
         this.zookeeperSynchronizer = zookeeperSynchronizer;
+        this.instanceId = UUID.randomUUID().toString(); // Generate a unique ID for the instance
+    }
+
+    @PostConstruct
+    public void registerInstance() {
+        try {
+            // Register the instance with Zookeeper as an ephemeral node
+            zookeeperSynchronizer.registerInstance(instanceId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public String getCacheEntry(String key) {
